@@ -2,6 +2,7 @@ import gzip
 import urllib.request as request
 import pandas as pd
 import io
+import sqlite3
 
 class eurostat_dataset:
     """
@@ -66,3 +67,7 @@ class eurostat_dataset:
         for c in codes:
             df[c].replace(self._getCodes(c),inplace=True)
         return df
+
+    def write_to_database(self):
+        conn = sqlite3.connect("ngr.db")
+        self.get_df().to_sql(str(self.code), conn, if_exists="replace")
