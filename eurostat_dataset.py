@@ -69,5 +69,12 @@ class eurostat_dataset:
         return df
 
     def write_to_database(self):
+        """
+        eurostat dataset will be written 
+        to the sqlite database 'ngr.bd' 
+        as a separate table
+
+        """
         conn = sqlite3.connect("ngr.db")
         self.get_df().to_sql(str(self.code), conn, if_exists="replace")
+        conn.close()
