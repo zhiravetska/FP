@@ -31,7 +31,7 @@ class eurostat_dataset:
                   d[row[0]] = row[1].strip()
       return d
     
-    def get_df(self):
+    def GetDf(self):
         """ 
         dataset: choose the dataset code from:
     https://ec.europa.eu/eurostat/databrowser/explore/all/all_themes?lang=en&display=list&sort=category
@@ -68,7 +68,7 @@ class eurostat_dataset:
             df[c].replace(self._getCodes(c),inplace=True)
         return df
 
-    def write_to_database(self):
+    def WriteToDatabase(self):
         """
         eurostat dataset will be written 
         to the sqlite database 'ngr.bd' 
@@ -76,5 +76,35 @@ class eurostat_dataset:
 
         """
         conn = sqlite3.connect("ngr.db")
-        self.get_df().to_sql(str(self.code), conn, if_exists="replace")
+        self.getDf().to_sql(str(self.code), conn, if_exists="replace")
         conn.close()
+
+    def DropTable(self):
+        """
+        drop table in the database
+
+        """
+        self.code=self.code.lower()
+        conn = sqlite3.connect("ngr.db")
+        cursor = conn.cursor()
+        cursor.execute("DROP TABLE "+str(self.code))
+        print("Table dropped... ")
+        conn.commit()
+        conn.close()
+    
+    def DatasetInfo(self):
+        """
+
+        Output: Title, Data Start, Data End
+        """
+        self.code=self.code.lower()
+        url = 'https://ec.europa.eu/eurostat/estat-navtree-portlet-prod/BulkDownloadListing?sort=1&file=table_of_contents_en.txt'
+        df = pd.read_csv(url, skiprows=6, header=None, sep='\s+')
+        columns = pd.read_csv(url, header=None, sep='\s+').iloc[0].values
+        df.columns=columns[:-1]
+        df=df[~df.type.isin(['folder','table'])]
+        df.title = df.title.str.lstrip()
+        title = df[df.code==self.code].title.values[0]
+        data_start = df[df.code==self.code]['data start'].values[0]
+        data_end = df[df.code==self.code]['data end'].values[0]
+        return title,data_start,data_end
