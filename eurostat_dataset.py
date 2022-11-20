@@ -76,7 +76,7 @@ class eurostat_dataset:
 
         """
         conn = sqlite3.connect("ngr.db")
-        self.getDf().to_sql(str(self.code), conn, if_exists="replace")
+        self.GetDf().to_sql(str(self.code), conn, if_exists="replace")
         conn.close()
 
     def DropTable(self):
