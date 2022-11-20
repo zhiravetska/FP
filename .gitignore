@@ -5,3 +5,4 @@ venv
 __pycache__
 try.ipynb
 eurostat_dataset copy.py 
+plotly-express.py
