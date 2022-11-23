@@ -62,7 +62,7 @@ class eurostat_dataset:
         #devide one column 'geo\\date'
         df.columns = [x.split('\\')[0].strip(' ') for x in df.columns]
         # use only file_content,not df,it is binary, so use decode()
-        #file_content has the first row with the code we need to decode into names using function get_code
+        #file_content has the first row with the code we need to decode into names using function _getCodes
         codes=file_content.decode().split('\t')[0].split('\\')[0].split(',')
         df = df.melt(id_vars=codes, 
         var_name="date", 
