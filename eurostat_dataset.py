@@ -9,15 +9,14 @@ class eurostat_dataset:
     get code from:
     https://ec.europa.eu/eurostat/databrowser/explore/all/all_themes?lang=en&display=list&sort=category
     """
+
+
     def __init__(self,code):
        self.code=code
        
-# Occasionally (but not often), 
-# you really don't care about the object that your method is bound to, 
-# and in that circumstance, you can decorate the method 
-# with the builtin staticmethod() function
     @staticmethod 
     def _getCodes(dictionary):
+        
       url_dict = "https://ec.europa.eu/eurostat/" + \
           "estat-navtree-portlet-prod/BulkDownloadListing" + \
           "?sort=1&downfile=dic%2Fen%2F" +\
@@ -33,12 +32,16 @@ class eurostat_dataset:
     
     def GetDf(self):
         """ 
-        dataset: choose the dataset code from:
-    https://ec.europa.eu/eurostat/databrowser/explore/all/all_themes?lang=en&display=list&sort=category
-        something like EXT_LT_INTROEU27_2020
-    List of datasets for downloding: 
-    https://ec.europa.eu/eurostat/estat-navtree-portlet-prod/BulkDownloadListing?dir=data&sort=1&sort=2&start=a
-    Returtn the cleaned dataset with decoded abbreviation
+        Get dataset as a dataframe
+        List of datasets for downloding: 
+        https://ec.europa.eu/eurostat/estat-navtree-portlet-prod/BulkDownloadListing?dir=data&sort=1&sort=2&start=a
+        
+        Args:
+        code (str): Code of dataset  
+            from https://ec.europa.eu/eurostat/databrowser/explore/all/all_themes?lang=en&display=list&sort=category
+    
+        Returns:
+            dataframe: normalized dataframe with columns:geo,date,value     
 
         """
 
@@ -70,10 +73,12 @@ class eurostat_dataset:
 
     def WriteToDatabase(self):
         """
-        eurostat dataset will be written 
-        to the sqlite database 'ngr.bd' 
-        as a separate table
-
+        write table to the local sqlite database 'ngr.db'
+        Args:
+            code (str): Code of dataset  
+            from https://ec.europa.eu/eurostat/databrowser/explore/all/all_themes?lang=en&display=list&sort=category
+        Returns:
+            None
         """
         conn = sqlite3.connect("ngr.db")
         self.GetDf().to_sql(str(self.code), conn, if_exists="replace")
@@ -81,8 +86,12 @@ class eurostat_dataset:
 
     def DropTable(self):
         """
-        drop table in the database
-
+        drop table from the local sqlite database 'ngr.db'
+        Args:
+            code (str): Code of dataset  
+            from https://ec.europa.eu/eurostat/databrowser/explore/all/all_themes?lang=en&display=list&sort=category
+        Returns:
+            None
         """
         self.code=self.code.lower()
         conn = sqlite3.connect("ngr.db")
@@ -94,8 +103,14 @@ class eurostat_dataset:
     
     def DatasetInfo(self):
         """
-
-        Output: Title, Data Start, Data End
+        Dataset metadata: Name,start date and end date
+        Args:
+            code (str): Code of dataset  
+            from https://ec.europa.eu/eurostat/databrowser/explore/all/all_themes?lang=en&display=list&sort=category
+        Returns:
+            title(str)
+            data_start(str)
+            data_end(str)
         """
         self.code=self.code.lower()
         url = 'https://ec.europa.eu/eurostat/estat-navtree-portlet-prod/BulkDownloadListing?sort=1&file=table_of_contents_en.txt'
