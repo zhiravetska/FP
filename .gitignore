@@ -1,0 +1,10 @@
+*.db
+venv
+*.csv
+*.xlsx
+__pycache__
+try.ipynb
+eurostat_dataset copy.py 
+plotly-express.py
+datafrom eurostat_2 copyofcopy.ipynb
+datafrom eurostat_2.ipynb
